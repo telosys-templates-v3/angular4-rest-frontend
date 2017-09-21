@@ -35,6 +35,11 @@ import * as _ from 'underscore';
 })
 export class $formComponentName implements OnInit {
 
+  // HTTP status code
+  readonly NOT_FOUND_ERROR = 404;
+  readonly CONFLICT_ERROR = 409;
+  readonly INTERNAL_SERVER_ERROR = 500;
+
   private title = '${entity.name} Form';
   private $LCentityName: ${entity.name};
   private form: FormGroup;
@@ -105,10 +110,14 @@ export class $formComponentName implements OnInit {
         Validators.required
       ],
 #elseif ($attrib.isKeyElement())
-      ${attrib.name}: [{
-        value: (${LCentityName} ? ${LCentityName}.${attrib.name} : ''),
-        disabled: true
-      }],
+      ${attrib.name}: #if($attrib.isAutoIncremented())[{
+          value: (${LCentityName} ? ${LCentityName}.${attrib.name} : ''),
+          disabled: true
+      }],#else[
+          (${LCentityName} ? ${LCentityName}.${attrib.name} : ''),
+          Validators.required
+      ],
+#end
 #else
       ${attrib.name}: [
 #if($attrib.isDateType())
@@ -190,8 +199,10 @@ export class $formComponentName implements OnInit {
         this.form = this._formBuilder.group(this.getNewForm(this.${LCentityName}));
       },
       error => {
-        if (error.message) {
-          this._notificationService.error(error.message, 'Couldn\'t find the $LCentityName with the given id');
+        if (error.status === this.NOT_FOUND_ERROR) {
+          this._notificationService.error(error.statusText, 'Entity not found in database');
+        } else if (error.status === this.INTERNAL_SERVER_ERROR) {
+          this._notificationService.error(error.statusText, error.json());
         } else {
           this._notificationService.error('Error', 'An error occured when trying to reach the server');
         }
@@ -213,9 +224,11 @@ export class $formComponentName implements OnInit {
         this._notificationService.success('Success', '${entity.name} added successfuly');
         this._router.navigate(['./${LCentityName}-form', ${entity.keyAttributesNamesAsString(', ', 'this.form.value.', '')}]);
       },
-      error => {
-        if (error.message) {
-          this._notificationService.error(error.message, '');
+      error => {1
+        if (error.status === this.CONFLICT_ERROR) {
+          this._notificationService.error(error.statusText, 'Id already used in database');
+        } else if (error.status === this.INTERNAL_SERVER_ERROR) {
+          this._notificationService.error(error.statusText, error.json());
         } else {
           this._notificationService.error('Error', 'An error occured when trying to reach the server');
         }
@@ -226,8 +239,10 @@ export class $formComponentName implements OnInit {
     this.${_entityService}.update(<${entity.name}>this.form.getRawValue(), this.ids).subscribe(
       result => this._notificationService.success('Success', '${entity.name} edited successfuly'),
       error => {
-        if (error.message) {
-          this._notificationService.error('Error', error.message);
+        if (error.status === this.NOT_FOUND_ERROR) {
+          this._notificationService.error(error.statusText, 'Entity not found in database');
+        } else if (error.status === this.INTERNAL_SERVER_ERROR) {
+          this._notificationService.error(error.statusText, error.json());
         } else {
           this._notificationService.error('Error', 'An error occured when trying to reach the server');
         }
@@ -253,7 +268,7 @@ export class $formComponentName implements OnInit {
     // Call delete service
     this._${LCentityName}Service.delete(${entity.keyAttributesNamesAsString(', ')}).subscribe(
       result => {
-        this._router.navigate(['./${LCentityName}']);
+        this._router.navigate(['./${LCentityName}-list']);
 
         this._notificationService.success(
           'Deleted',
@@ -261,10 +276,13 @@ export class $formComponentName implements OnInit {
           `The ${LCentityName} entry with the id(s)='${entity.keyAttributesNamesAsString(', ', $entityDeleteNotificationPrefix, '}')}' was deleted successfuly`);
       },
       error => {
-        console.error(error);
-        this._notificationService.error(
-          'Error',
-          'An error occured when trying to reach the server');
+        if (error.status === this.NOT_FOUND_ERROR) {
+          this._notificationService.error(error.statusText, 'Entity not found in database');
+        } else if (error.status === this.INTERNAL_SERVER_ERROR) {
+          this._notificationService.error(error.statusText, error.json());
+        } else {
+          this._notificationService.error('Error', 'An error occured when trying to reach the server');
+        }
       });
   }
 }

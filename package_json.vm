@@ -1,5 +1,5 @@
 {
-  "name": "angular4-demo",
+  "name": "angular4-rest-frontend",
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
@@ -19,7 +19,7 @@
     "@angular/forms": "^4.2.3",
     "@angular/http": "^4.2.3",
     "@angular/material": "^2.0.0-beta.8",
-	"@angular/cdk": "^2.0.0-beta.8",
+    "@angular/cdk": "^2.0.0-beta.8",
     "@angular/platform-browser": "^4.2.3",
     "@angular/platform-browser-dynamic": "^4.2.3",
     "@angular/router": "^4.2.3",

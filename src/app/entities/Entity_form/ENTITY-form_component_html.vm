@@ -12,19 +12,19 @@
 #if ($attrib.isKeyElement() && !$attrib.isFK())
         <md-grid-tile [colspan]="1" [rowspan]="1">
           <md-input-container class="form-full-width">
-            <input mdInput placeholder="${attrib.name} (disabled)" formControlName="${attrib.name}">
+            <input mdInput placeholder="${attrib.name}#if($attrib.isAutoIncremented())(disabled)#else #end" formControlName="${attrib.name}">
           </md-input-container>
         </md-grid-tile>
 #elseif ($attrib.isDateType())
         <md-grid-tile [colspan]="1" [rowspan]="1">
-			<md-form-field class="form-full-width">
-  				<input mdInput [mdDatepicker]="picker" placeholder="${attrib.name}" required formControlName="${attrib.name}">
-  				<md-datepicker-toggle mdSuffix [for]="picker"></md-datepicker-toggle>
-  				<md-datepicker ${SHARP}picker></md-datepicker>
-                 <md-error *ngIf="form.controls.${attrib.name}.hasError('required')">
-                   ${attrib.name} is required
-                 </md-error>
-			</md-form-field>
+          <md-form-field class="form-full-width">
+            <input mdInput [mdDatepicker]="picker" placeholder="${attrib.name}" required formControlName="${attrib.name}">
+            <md-datepicker-toggle mdSuffix [for]="picker"></md-datepicker-toggle>
+            <md-datepicker ${SHARP}picker></md-datepicker>
+            <md-error *ngIf="form.controls.${attrib.name}.hasError('required')">
+              ${attrib.name} is required
+            </md-error>
+          </md-form-field>
         </md-grid-tile>
 #elseif ( $attrib.isFK() && $attrib.isKeyElement())
 #set($referencedEntity = $fn.uncapitalize($attrib.referencedEntityName))
@@ -46,7 +46,7 @@
 #set($options = $options + "{{ ${referencedEntity}.${refAttrib.name} }}")
 #end
 #end
-				$options
+              $options
             </md-option>
           </md-select>
         </md-grid-tile>
@@ -70,7 +70,7 @@
 #set($options = $options + "{{ ${referencedEntity}.${refAttrib.name} }}")
 #end
 #end
-				$options
+              $options
             </md-option>
           </md-select>
         </md-grid-tile>
@@ -103,6 +103,6 @@
     </div>
   </form>
   <div class="mdl-card__menu">
-    <a md-raised-button class="card-header-button" routerLink="/${LCentityName}">${entity.name} list</a>
+    <a md-raised-button class="card-header-button" [routerLink]="['/${LCentityName}-list']">${entity.name} list</a>
   </div>
 </div>

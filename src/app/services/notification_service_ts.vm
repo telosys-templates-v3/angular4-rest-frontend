@@ -80,7 +80,10 @@ export class NotificationService {
     } else if (notif.type === 'error') {
       this._notificationsService.error(
         notif.title,
-        notif.message
+        notif.message,
+        {
+          timeOut: 0
+        }
       );
     } else {
       this._notificationsService.warn(

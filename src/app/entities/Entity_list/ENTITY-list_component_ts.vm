@@ -64,7 +64,11 @@ export class $listComponentName implements OnInit, OnChanges {
         this.listOf${entity.name}s = data;
         this.setPage(1);
       },
-      error => console.error(error));
+      error => {
+        this._notificationService.error(
+          'Error',
+          'An error occured when trying to reach the server');
+    });
   }
 
   edit${entity.name} = ($entity.keyAttributesNamesAsString(', ')): void => {
@@ -84,7 +88,6 @@ export class $listComponentName implements OnInit, OnChanges {
           `The $LCentityName entry with the id='$entity.keyAttributesNamesAsString(', ', '${', '}')' was deleted successfuly`);
       },
       error => {
-        console.error(error);
         this._notificationService.error(
           'Error',
           'An error occured when trying to reach the server');
