@@ -1,4 +1,4 @@
-#parse("../../../../include/entitiesNamesRef.vm")
+#parse("include/entitiesNamesRef.vm")
 #set ( $LCentityName = $fn.uncapitalize($entity.name) )
 #set ( $LCentityNameWithDot = $fn.uncapitalize($entity.name) + "." )
 #set ( $_entityService = "_" + $fn.uncapitalize($baseServiceName) )
